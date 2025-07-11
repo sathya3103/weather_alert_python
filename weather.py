@@ -1,4 +1,4 @@
-import requests, os, datetime
+import requests, os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,73 +7,42 @@ API_KEY = os.getenv("OWM_API_KEY")
 LAT = os.getenv("LATITUDE")
 LON = os.getenv("LONGITUDE")
 
-# ---- Helpers ----
-def check_alerts(desc, temp, humidity, uvi, aqi):
+# Detect severe climate conditions
+def check_for_alert(weather_description, temperature):
     alerts = []
-    if "rain" in desc.lower() or "storm" in desc.lower():
+    if "storm" in weather_description.lower() or "rain" in weather_description.lower():
         alerts.append("⚠️ Rain/Storm Alert")
-    if temp >= 35:
+    if temperature >= 35:
         alerts.append("🔥 Heat Alert")
-    if temp <= 5:
+    if temperature <= 5:
         alerts.append("❄️ Cold Alert")
-    if humidity >= 80:
-        alerts.append("🌫️ High Humidity Alert")
-    if uvi > 6:
-        alerts.append("☀️ UV Exposure Alert")
-    if aqi > 100:
-        alerts.append("🌫️ Poor Air Quality Alert")
     return alerts
 
-# ---- Fetch AQI ----
-def get_air_quality():
-    aqi_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={LAT}&lon={LON}&appid={API_KEY}"
-    aqi_data = requests.get(aqi_url).json()
-    try:
-        return aqi_data["list"][0]["main"]["aqi"] * 50  # Convert to approx scale
-    except:
-        return 0
-
-# ---- Fetch UV ----
-def get_uvi():
-    onecall_url = f"https://api.openweathermap.org/data/3.0/onecall?lat={LAT}&lon={LON}&appid={API_KEY}"
-    data = requests.get(onecall_url).json()
-    return data.get("current", {}).get("uvi", 0)
-
-# ---- Main Forecast ----
+# 4-day weather forecast + alerts
 def get_weather_forecast():
     url = f"https://api.openweathermap.org/data/2.5/forecast?lat={LAT}&lon={LON}&appid={API_KEY}&units=metric"
-    data = requests.get(url).json()
+    res = requests.get(url)
+    data = res.json()
 
     if data.get("cod") != "200":
         return "❌ Failed to fetch weather data."
 
-    aqi = get_air_quality()
-    uvi = get_uvi()
-
+    forecast_list = data.get("list", [])
     report = "🌦️ 4-Day Weather Forecast:\n\n"
 
-    for item in data.get("list", [])[:32:8]:
-        date = item["dt_txt"].split()[0]
-        temp = item["main"]["temp"]
-        humidity = item["main"]["humidity"]
-        desc = item["weather"][0]["description"]
+    for item in forecast_list[:8*4:8]:  # 8 intervals per day (~3 hours each)
+        dt_txt = item['dt_txt'].split(" ")[0]
+        temp = item['main']['temp']
+        weather_desc = item['weather'][0]['description']
+        alerts = check_for_alert(weather_desc, temp)
 
-        alerts = check_alerts(desc, temp, humidity, uvi, aqi)
-
-        report += f"📅 {date}\nTemp: {temp}°C | Humidity: {humidity}% | Condition: {desc}\n"
+        report += f"📅 {dt_txt}\n"
+        report += f"Temp: {temp}°C | Condition: {weather_desc}\n"
         if alerts:
             report += "🚨 Alerts: " + ", ".join(alerts) + "\n"
         report += "\n"
 
-    location_link = f"https://www.google.com/maps?q={LAT},{LON}"
-    report += f"📍 Location: {location_link}"
+    location = f"https://www.google.com/maps?q={LAT},{LON}"
+    report += f"📍 Location: {location}"
 
-    return report, {
-        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "temperature": temp,
-        "humidity": humidity,
-        "uvi": uvi,
-        "aqi": aqi,
-        "alerts": alerts,
-        "weather": desc
-    }
+    return report
