@@ -2,7 +2,7 @@
 
 ⚠️ An automated climate alert system using **Python**, sending real-time **weather reports & alerts to WhatsApp Web**.  
 
-Built for Hackathons and automation enthusiasts 🌟.
+Built for automation enthusiasts 🌟.
 
 ---
 
