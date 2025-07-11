@@ -87,6 +87,9 @@ weather_alert/
 ```
 
 ---
+![Made with Python](https://img.shields.io/badge/Made%20with-Python-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
+
 
 ### 🙌 Contributions Welcome
 Fork this repo, open an issue or PR!
