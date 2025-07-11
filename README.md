@@ -12,10 +12,7 @@ Built for automation enthusiasts 🌟.
   - Heat > 35°C
   - Cold < 5°C
   - Rain / Storm
-- 🌫️ Advanced Alerts:
-  - Humidity > 80%
-  - UV Index > 6
-  - Air Quality Index (AQI) > 100
+
 - 📍 Live location link (Google Maps)
 - 💬 WhatsApp Web integration using **PyWhatKit**
 - 🔁 Fully automatic: can run hourly from VSCode terminal
@@ -58,18 +55,9 @@ python app.py
 WhatsApp Web will open in your browser and send the message automatically after a few seconds.
 
 ### 🔍 Example Alert
-```
-🌦️ 4-Day Weather Forecast:
 
-📅 2025-07-11
-Temp: 36°C | Humidity: 82% | Condition: light rain
-🚨 Alerts: 🌫️ High Humidity Alert, 🔥 Heat Alert, ⚠️ Rain Alert
+<img width="618" height="530" alt="image" src="https://github.com/user-attachments/assets/1c02c0be-c8ab-46fa-83f2-bb4427c33232" />
 
-📅 2025-07-12
-Temp: 34°C | Humidity: 60% | Condition: clear sky
-
-📍 Location: https://www.google.com/maps?q=12.9716,77.5946
-```
 
 ---
 
