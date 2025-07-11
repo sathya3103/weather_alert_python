@@ -1,0 +1,5 @@
+requests
+pywhatkit
+schedule
+python-dotenv
+firebase-admin
