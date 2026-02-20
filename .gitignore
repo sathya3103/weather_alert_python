@@ -1,24 +1,36 @@
+# =========================
 # Environment variables
+# =========================
 .env
 
-# Python virtual environment
+# =========================
+# Virtual environment
+# =========================
 venv/
 
+# =========================
 # Python cache
+# =========================
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# PyWhatKit database
+# =========================
+# PyWhatKit generated file
+# =========================
 PyWhatKit_DB.txt
 
-# VS Code
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-test_alert.py
+# =========================
+# Test output logs (generated)
+# =========================
 test_log.txt
 test_log_ascii.txt
 test_output.txt
+
+# =========================
+# Editor / OS
+# =========================
+.vscode/
+.DS_Store
+Thumbs.db
