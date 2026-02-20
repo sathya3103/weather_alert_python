@@ -3,5 +3,5 @@ from whatsapp import send_whatsapp
 
 def weather_alert():
     report = get_weather_forecast()
-    print(report)  # Show on terminal for testing
+    print(report)
     send_whatsapp(report)

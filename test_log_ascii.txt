@@ -1,0 +1,23 @@
+🚀 Triggering Weather Alert immediately for testing...
+🌦️ 4-Day Weather Forecast:
+
+📅 2026-02-20
+Temp: 25.6°C | Condition: few clouds
+
+📅 2026-02-21
+Temp: 25.69°C | Condition: clear sky
+
+📅 2026-02-22
+Temp: 25.63°C | Condition: broken clouds
+
+📅 2026-02-23
+Temp: 25.75°C | Condition: broken clouds
+
+📍 Location: https://www.google.com/maps?q=13.0827,80.2707
+
+📲 Preparing alert for +916383071072...
+🕵️ Starting Selenium Automation...
+❌ Selenium missing.
+📲 Falling back to PyWhatKit Instant...
+✅ Delivered via PyWhatKit.
+✅ Test run complete.

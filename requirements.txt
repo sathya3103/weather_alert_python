@@ -2,6 +2,5 @@ requests
 pywhatkit
 schedule
 python-dotenv
-firebase-admin
 selenium
 webdriver-manager
