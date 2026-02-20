@@ -17,3 +17,8 @@ PyWhatKit_DB.txt
 # OS files
 .DS_Store
 Thumbs.db
+
+test_alert.py
+test_log.txt
+test_log_ascii.txt
+test_output.txt
