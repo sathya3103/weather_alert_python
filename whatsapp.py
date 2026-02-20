@@ -9,36 +9,35 @@ PHONE_NUMBER = os.getenv("PHONE_NUMBER")
 
 def send_whatsapp(message):
     # Fastest path: try attaching to a running Chrome with remote debugging (requires Chrome started with --remote-debugging-port=9222)
+    attached = False
     try:
+        attached = send_whatsapp_attach(message)
+    except Exception:
         attached = False
-        try:
-            attached = send_whatsapp_attach(message)
-        except Exception:
-            attached = False
-        if attached:
-            return True
+    if attached:
+        return True
 
-        now = datetime.datetime.now()
-        # Next-fastest: PyWhatKit instant send (may take ~5-7s depending on machine)
+    now = datetime.datetime.now()
+    # Next-fastest: PyWhatKit instant send (may take ~5-7s depending on machine)
+    try:
+        pywhatkit.sendwhatmsg_instantly(PHONE_NUMBER, message, wait_time=6, tab_close=True, close_time=1)
+        print("✅ WhatsApp message sent (pywhatkit instant).")
+        return True
+    except Exception as e:
+        print(f"⚠️ Instant send failed: {e}. Falling back to scheduled send (robust scheduling).")
         try:
-            pywhatkit.sendwhatmsg_instantly(PHONE_NUMBER, message, wait_time=6, tab_close=True, close_time=1)
-            print("✅ WhatsApp message sent (pywhatkit instant).")
+            # Schedule at least 120 seconds in the future to avoid negative sleep inside pywhatkit
+            target = now + datetime.timedelta(seconds=120)
+            send_hour = target.hour
+            send_minute = target.minute
+            # Use a small wait_time for pywhatkit (seconds it waits after opening WhatsApp Web)
+            wait_time = 5
+            pywhatkit.sendwhatmsg(PHONE_NUMBER, message, send_hour, send_minute, wait_time=wait_time)
+            print("✅ WhatsApp message scheduled (pywhatkit fallback).")
             return True
-        except Exception as e:
-            print(f"⚠️ Instant send failed: {e}. Falling back to scheduled send (robust scheduling).")
-            try:
-                # Schedule at least 120 seconds in the future to avoid negative sleep inside pywhatkit
-                target = now + datetime.timedelta(seconds=120)
-                send_hour = target.hour
-                send_minute = target.minute
-                # Use a small wait_time for pywhatkit (seconds it waits after opening WhatsApp Web)
-                wait_time = 5
-                pywhatkit.sendwhatmsg(PHONE_NUMBER, message, send_hour, send_minute, wait_time=wait_time)
-                print("✅ WhatsApp message scheduled (pywhatkit fallback).")
-                return True
-            except Exception as e2:
-                print(f"❌ Scheduled fallback also failed: {e2}")
-                return False
+        except Exception as e2:
+            print(f"❌ Scheduled fallback also failed: {e2}")
+            return False
 
 
 # --- Selenium fast-send fallback -------------------------------------------------
@@ -70,6 +69,8 @@ def send_whatsapp_fast(message):
 
     profile = os.getenv("CHROME_PROFILE_PATH")
     options = webdriver.ChromeOptions()
+    # Keep the Chrome window open after the WebDriver session ends
+    options.add_experimental_option("detach", True)
     options.add_argument("--disable-infobars")
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-gpu")
@@ -178,6 +179,8 @@ def send_whatsapp_debug(message, screenshot_path='whatsapp_debug.png'):
 
     profile = os.getenv("CHROME_PROFILE_PATH")
     options = webdriver.ChromeOptions()
+    # Keep the Chrome window open after the WebDriver session ends
+    options.add_experimental_option("detach", True)
     if profile:
         profile = os.path.normpath(profile)
         parent = os.path.dirname(profile)
@@ -256,6 +259,8 @@ def send_whatsapp_attach(message, debugger_address='127.0.0.1:9222'):
         return False
 
     options = webdriver.ChromeOptions()
+    # When attaching to an already-running Chrome, prefer not to close it
+    # Do not set the unsupported 'detach' experimental option when attaching
     options.add_experimental_option("debuggerAddress", debugger_address)
     try:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
